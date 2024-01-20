@@ -1,0 +1,36 @@
+name: "swiftcat CI"
+  
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: macos-13
+    permissions:
+      contents: write
+    steps:
+      - name: Swift version setup
+        uses: swift-actions/setup-swift@v1
+      - name: Get Swift version
+        run: swift --version
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: swift build -c release --arch arm64 --arch x86_64
+      - name: Compress archive
+        run: tar -czf ${{ github.ref_name }}.tar.gz -C .build/apple/Products/Release swiftcat
+      - name: Relese
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ github.ref_name }}.tar.gz
+      - name: Bump Homebrew formula
+        uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: swiftcat
+          homebrew-tap: jacinzhang/homebrew-tap
+          download-url: https://github.com/jacinzhang/swiftcat/releases/download/${{ github.ref_name }}/${{ github.ref_name }}.tar.gz
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+
