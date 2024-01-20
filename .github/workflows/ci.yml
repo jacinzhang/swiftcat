@@ -25,12 +25,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ github.ref_name }}.tar.gz
-      - name: Bump Homebrew formula
-        uses: mislav/bump-homebrew-formula-action@v3
-        with:
-          formula-name: swiftcat
-          homebrew-tap: jacinzhang/homebrew-tap
-          download-url: https://github.com/jacinzhang/swiftcat/releases/download/${{ github.ref_name }}/${{ github.ref_name }}.tar.gz
-        env:
-          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
 
